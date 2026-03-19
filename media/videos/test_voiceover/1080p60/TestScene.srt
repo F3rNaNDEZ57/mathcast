@@ -1,0 +1,8 @@
+1
+00:00:00,000 --> 00:00:05,732
+Welcome to the automated pipeline. This is a Google TTS test.
+
+2
+00:00:06,833 --> 00:00:11,605
+Here we see Euler's identity rendered perfectly using Math TeX.
+

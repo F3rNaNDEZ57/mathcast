@@ -1,0 +1,6 @@
+# This file is used internally by FFMPEG.
+file 'file:C:/Projects/manim-voiceover/media/videos/test_voiceover/1080p60/partial_movie_files/TestScene/2257293077_3916811925_223132457.mp4'
+file 'file:C:/Projects/manim-voiceover/media/videos/test_voiceover/1080p60/partial_movie_files/TestScene/2135761390_1839128356_2368968512.mp4'
+file 'file:C:/Projects/manim-voiceover/media/videos/test_voiceover/1080p60/partial_movie_files/TestScene/2135761390_2752266793_1054832458.mp4'
+file 'file:C:/Projects/manim-voiceover/media/videos/test_voiceover/1080p60/partial_movie_files/TestScene/2135761390_2408024828_1888038214.mp4'
+file 'file:C:/Projects/manim-voiceover/media/videos/test_voiceover/1080p60/partial_movie_files/TestScene/2135761390_1787876575_636043848.mp4'
