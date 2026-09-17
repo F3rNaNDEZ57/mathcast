@@ -1,48 +1,90 @@
-# Autonomous Generative Educational Animation Pipeline
+# manim-voiceover
 
-This repository contains an end-to-end pipeline designed to autonomously synthesize mathematical animations using the Gemini CLI, Manim Community Edition, and localized Text-to-Speech (TTS) models.
+Turn Markdown maths lessons into narrated [Manim](https://docs.manim.community/) animations.
 
-## Repository Architecture
-- **`context/`**: Place your raw markdown educational texts here.
-- **`templates/`**: Contains the zero-shot prompting strategies (`generation_prompt.md`).
-- **`scripts/`**: Holds the bash orchestrator (`orchestrate.sh`) and jq extraction utility (`extract_code.sh`).
-- **`generated/`**: The transient build folder where the JSON payload and sanitized python scripts are deposited.
-- **`media/`**: Manim's native output directory. Compiled MP4s are located here.
+An LLM writes the Manim scene from your prose, renders it, fixes what breaks, checks the
+result, and produces an MP4 with synchronised narration and subtitles.
 
-## 1. System Requirements
+> **Status: prototype.** One lesson has been rendered end to end
+> (`Chapter2Neuron` — the artificial neuron). The generation loop was rebuilt around Claude
+> Code in September 2026 and has not yet been run across a batch of lessons. Expect to steer it.
 
-### Python Environment
-Requires Python 3.9+ due to underlying PyTorch dependencies.
-```bash
+## How it works
+
+```
+context/lesson.md
+      │
+      ▼
+  [ Claude Code: write scene → manim -ql → read error → fix → inspect frames → manim -qh ]
+      │
+      ▼
+media/videos/<scene>/1080p60/<Scene>.mp4  +  .srt
+```
+
+The repair loop is the point. Generated Manim code fails in four ways — syntax errors, runtime
+errors, **layout errors** (overlapping labels, off-screen mobjects), and pedagogical errors.
+The first two a script could catch. The third needs someone to look at a rendered frame, which
+is why generation is a Claude Code skill rather than a pipeline script.
+
+## Setup
+
+**Python packages**
+
+```powershell
 python -m venv venv
-source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+.\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### System Dependencies
-You must have the following installed and accessible in your system's PATH:
-- **Node.js**: Required to run the Gemini CLI (`npm install -g @google/gemini-cli`).
-- **FFmpeg**: Required by Manim for multiplexing video and audio streams.
-- **SoX**: Required by `manim-voiceover` for temporal manipulation.
-- **TeX Live / MiKTeX**: Required for `MathTex` compilation.
-- **jq**: Required by `scripts/extract_code.sh` for JSON processing.
+**System dependencies** — all must be on `PATH`:
 
-## 2. Phase 2 Verification (Local TTS Test)
-Before invoking the full generative pipeline, verify your Manim configuration, Coqui PyTorch bindings, and LaTeX engine by running the test script:
+| | Why |
+|---|---|
+| [FFmpeg](https://ffmpeg.org/) | Muxing video and audio |
+| [MiKTeX](https://miktex.org/) or TeX Live | `MathTex` compilation |
+| [Claude Code](https://code.claude.com/docs/) | Runs the generation loop |
 
-```bash
-manim -qh test_voiceover.py TestScene
-```
-*If successful, an MP4 will be generated and played, demonstrating text, equations, and synchronized localized audio.*
+gTTS is cloud-based, so **rendering needs a network connection**.
 
-## 3. Orchestrating the Generative Pipeline
-To execute the pipeline against a markdown document:
+`manim-voiceover` also ships `OpenAIService`, `ElevenLabsService`, `AzureService`, `CoquiService`,
+`PyTTSX3Service` and `RecorderService` — swapping is one line in the scene. Only `OpenAIService`
+works here without installing an extra. **There is no Piper service in the installed version**,
+despite what older notes claimed. See `Skills/Skill Registry` in the vault.
 
-```bash
-bash scripts/orchestrate.sh context/Automating_Manim_Video_Creation.md
+## Verify the toolchain
+
+```powershell
+manim -ql test_voiceover.py TestScene
 ```
 
-### Workflow Execution Log:
-1. **The Cognitive Engine**: The script dynamically injects the context file into the prompt template and invokes the `gemini` CLI in headless mode. The JSON response is routed to `generated/response.json`.
-2. **The Sanitation Layer**: `scripts/extract_code.sh` utilizes `jq` and `awk` to filter the markdown artifacts and extract the raw executable python to `generated/chapter_scene.py`.
-3. **The Visual Rendering Engine**: The script spins up Manim, which dynamically evaluates the generated AST, connects to the local Coqui/Piper acoustic models for synthesis, and executes spatial interpolation via FFmpeg.
+Exercises Manim, LaTeX, gTTS and FFmpeg together. Run this first whenever something breaks;
+if it passes, the problem is in a generated scene rather than the setup.
+
+## Make a video
+
+Put a lesson in `context/`, open Claude Code in this directory, and ask:
+
+```
+make a video from context/your-lesson.md
+```
+
+The `make-video` skill takes it from there — writing the scene, rendering a draft, repairing
+errors, checking the frames for layout problems, and promoting to 1080p60 once it's clean.
+It'll tell you the scene class name and the output path.
+
+To re-render or revise an existing scene, just say so — the generated `.py` stays in
+`generated/` and the TTS cache means unchanged narration isn't re-synthesised.
+
+## Repository layout
+
+| Path | |
+|---|---|
+| `context/` | Source lessons (Markdown) — **your input** |
+| `generated/` | Generated scenes — build artifacts, gitignored |
+| `media/` | Renders, TeX SVGs, TTS cache — gitignored |
+| `test_voiceover.py` | Toolchain smoke test |
+| `.claude/skills/make-video/` | The generation and render loop |
+| `CLAUDE.md` | Machine-facing project notes |
+
+Project planning, decisions and run logs live in an Obsidian vault at
+`personal-project-knowledge-vault/manim-voiceover`.

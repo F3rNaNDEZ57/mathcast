@@ -1,5 +1,12 @@
+# Core rendering
 manim>=0.18.0
-manim-voiceover[coqui]>=0.3.7
-torch
-torchaudio
-numpy
+
+# Voiceover plugin + the speech service actually in use.
+# gTTS is cloud-based and needs network at render time.
+manim-voiceover>=0.3.7
+gTTS
+
+# Local TTS (offline, better voices, word-level timing) is unbuilt - see D3 in the
+# vault's Open Decisions. It needs ~2.5GB of torch and was previously listed here
+# despite nothing importing it. Uncomment only when a local service is wired up:
+# manim-voiceover[coqui]

@@ -1,3 +1,5 @@
+import ipv4_first  # noqa: F401  - IPv6 is black-holed here; see the module docstring
+
 from manim import *
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.gtts import GTTSService

@@ -1,0 +1,20 @@
+# Manim output - renders, partial movies, TeX artifacts, TTS cache
+media/
+
+# Generated scenes are build artifacts, not source
+generated/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Secrets
+.env
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
