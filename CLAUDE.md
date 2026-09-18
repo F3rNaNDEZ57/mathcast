@@ -1,37 +1,32 @@
 # CLAUDE.md — mathcast
 
-> **Renamed 2026-09-18** (D6.1). This repo is becoming the **`mathcast`** Claude Code plugin.
-> The GitHub remote is still `F3rNaNDEZ57/manim_voiceover` until the user renames it.
+Machine-facing notes for anyone — human or agent — working on the **plugin itself**.
+If you just want to *use* mathcast, read `README.md` instead.
 
 Machine-facing notes for this repo. The reasoning behind it lives in an Obsidian vault.
 
-## Check the vault first
+## The design constraints that matter
 
-**Before starting non-trivial work, read the vault.** It is at
-`C:\Projects\personal-project-knowledge-vault\manim-voiceover\`
-(repo: `github.com/F3rNaNDEZ57/personal-project-knowledge-vault`, private).
+These are the decisions most likely to be undone by someone who doesn't know why they exist.
+**Read this section before changing the architecture.**
 
-| Read | When |
+| | |
 |---|---|
-| `Home.md` | Always — the entry point, with a numbered "Start here" |
-| `System Map.md` + `.canvas` | Always — current status, next action, what is verified vs. merely built |
-| `Open Decisions.md` | **Before any design choice.** `D1..Dn`, with the options that were rejected and why. Authoritative |
-| `Roadmap.md` | Before picking up work — says what is done, deferred, and deliberately not being done |
-| `Research Brief.md` | Before changing the generation approach — the failure taxonomy and what would falsify the design |
-| `Runs/` | Before claiming something works — dated logs of what actually ran |
-| `Skills/Skill Registry.md` | Before suggesting any third-party skill or a TTS change |
+| **Keep render → repair → inspect in one context** | It works because a single context holds the lesson, the scene, the traceback and the frames at once. Splitting it across sub-agents recreates the failure mode this project deleted an orchestrator to escape |
+| **Don't reintroduce a subprocess orchestrator** | The previous pipeline shelled out to a CLI and parsed Python back out of JSON. Every one of its bugs was a text-marshalling bug. They were not fixed — they were deleted |
+| **Nothing machine-specific ships** | `import ipv4_first` is conditional on `./ipv4_first.py` existing, which `/mathcast:init` writes only where it probed a black-holed IPv6 route |
+| **A fix isn't shipped until the version bumps** | Plugin updates are version-gated. Bump `.claude-plugin/plugin.json`, then `claude plugin marketplace update` before `claude plugin update` |
+| **Don't propose a third-party skill for TTS** | 404 were surveyed; none satisfies the `SpeechService` contract. Better narration is a one-line `self.set_speech_service(...)` swap |
 
-**Why this matters here:** this repo has already shipped documentation that contradicted its own
-code (a README describing a local-TTS `jq` pipeline that never existed). The vault is the record
-of what is actually true, including the things that were tried and rejected. Re-deriving a
-settled decision wastes a turn; re-opening one without reading why it was settled is worse.
+> **Maintainer's note.** The full reasoning — numbered decisions, rejected options, and dated run
+> logs — lives in a private Obsidian vault outside this repo. It is not needed to contribute; this
+> file carries the constraints that actually bind. Where a rule below cites a `D<n>`, that is a
+> pointer into those notes, not a file you're missing.
 
-Two standing consequences recorded there, so they are not rediscovered the hard way:
-
-- **Do not reintroduce a subprocess orchestrator** (D1).
-- **Do not propose a third-party skill for text-to-speech** — 404 were surveyed, 16 audited, none
-  can replace `GTTSService`. Better narration is a one-line `self.set_speech_service(...)` swap
-  (`Skills/Skill Registry.md`).
+**Why the record matters here:** this repo has already shipped documentation that contradicted
+its own code — a README describing a local-TTS `jq` pipeline that never existed. Whatever you
+change, make the docs and the code agree in the same commit. Re-deriving a settled decision
+wastes a turn; re-opening one without knowing why it was settled is worse.
 
 ## What this project is
 
@@ -85,7 +80,7 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
 | `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
 | `assets/ipv4_first.py` | IPv6 shim **template**. Copied into a project only if the probe finds the fault |
-| `inputs/` | Source material — md, pdf, links. *(was `context/`)* |
+| `inputs/` | Source material — md, pdf, links. **Gitignored — it is the user's** |
 | `work/<lesson>/` | outline · plan · script · `mathcast.json`. **Gitignored** |
 | `generated/*.py` | Generated scenes. **Build artifacts — gitignored** |
 | `media/` | Manim output: renders, TeX SVGs, TTS cache. **Gitignored** |
@@ -117,20 +112,20 @@ Install it in **two steps** — `pip install kokoro-onnx soundfile` then
 `pip install kokoro-manim-voiceover --no-deps`. **Never the bare one-liner**: `manim-voiceover`
 pins `python-dotenv<0.22.0`, so it downgrades `python-dotenv` and breaks `fastmcp-slim`/`mcp`.
 
-## After a task that changes project state
-
-Update the vault **and** its `System Map.canvas` — `Working Rules.md` there is the full rule.
-Short form:
-
-1. Update the notes the task touched (status, checklists, findings).
-2. Update `System Map.md` + `System Map.canvas` — phase, next action, what is now verified.
-3. Check `Home.md` still points at current reality.
-4. A real render, or an interesting failure, gets a dated note in `Runs/`. Record the command
-   **actually run**, not the one that was supposed to work.
-5. New decision with more than one defensible answer → a new `D<n>` in `Open Decisions.md`,
-   keeping the rejected options.
-6. Never put API keys or secrets in the vault — `.env` only, and `.env` is gitignored here.
+## After a change
 
 **"Works" means someone ran it and saw the output.** If a component is believed to work but has
-not been run since it changed, the vault says *unverified*. Both repos are public-facing git
-history; write accordingly.
+not been run since it changed, say *unverified* — in the README, in the PR, wherever the claim
+appears. This repo's own status section is written that way on purpose.
+
+Practically, for any change to the plugin:
+
+1. `claude plugin validate .` must pass.
+2. If you changed behaviour, **bump `version` in `.claude-plugin/plugin.json`** — otherwise the
+   fix reaches nobody who has already installed.
+3. Update the docs that the change touched, in the same commit.
+4. Never commit API keys or secrets. `.env` is gitignored; `inputs/` is too, because the material
+   people put there is theirs.
+
+The maintainer additionally keeps dated run logs and numbered decisions in the private vault
+mentioned above. That is not a contribution requirement.
