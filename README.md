@@ -11,7 +11,8 @@ result, and produces an MP4 with synchronised narration and subtitles.
 > 2026-09-18 and is newer than that: `/mathcast:init` is written and its environment probe is
 > verified, but the command itself has not been exercised end to end. The **ingest stage is
 > built and has been run** on real material; its PDF and link paths are not yet exercised.
-> Planning and scripting stages don't exist — `make-video` reads the outline directly for now.
+> The **plan stage is built** and exercised. The scripting stage doesn't exist, so `make-video`
+> reads `plan.md` directly for now.
 > Expect to steer it.
 
 ## How it works
@@ -20,7 +21,7 @@ result, and produces an MP4 with synchronised narration and subtitles.
 inputs/                        your material - md, pdf, links
    │
    ├─[ ingest ]──→ work/<lesson>/outline.md        ◀ the one review gate   ✅ built
-   ├─[ plan ]────→ work/<lesson>/plan.md            (not built yet)
+   ├─[ plan ]────→ work/<lesson>/plan.md            scene split, beats   ✅ built
    ├─[ script ]──→ <Scene>.script.md                (not built yet)
    │
    └─[ write scene → manim -ql → read error → fix → inspect frames → manim -qh ]   ◀ proven
@@ -126,6 +127,7 @@ means unchanged narration isn't re-synthesised.
 | `.claude-plugin/` | `plugin.json` and `marketplace.json` |
 | `commands/init.md` | `/mathcast:init` |
 | `skills/ingest/` | Material → `work/<lesson>/outline.md`, the review gate |
+| `skills/plan/` | Outline → `work/<lesson>/plan.md`: scene split, beats, risks |
 | `skills/make-video/` | The render, repair and inspect loop |
 | `assets/probe_env.py` | Toolchain, network and TTS probe — bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |

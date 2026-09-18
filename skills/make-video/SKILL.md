@@ -24,7 +24,8 @@ Prefer the most-processed artifact that exists. In order:
 | If this exists | Use it |
 |---|---|
 | `work/<lesson>/<Scene>.script.md` | The narration and beats are already chosen. Don't re-derive them |
-| `work/<lesson>/outline.md` | **The usual case today.** Concepts, maths and notation are extracted and a human has reviewed them. Read its *Flagged for review* section first - if something is flagged as blocked or inferred, raise it before animating it |
+| `work/<lesson>/plan.md` | **The usual case today.** Scene split, beats, timings and risks are chosen. Build exactly the parts it lists - if it records something as *omitted*, leave it out rather than helpfully restoring it |
+| `work/<lesson>/outline.md` | Concepts, maths and notation extracted and reviewed, but no scene plan yet. Run the `plan` skill first, or plan inline if the lesson is obviously one scene. Read its *Flagged for review* section either way |
 | only `inputs/` | No outline yet. **Run the `ingest` skill first** - don't animate straight from raw material, because nobody has checked the extraction |
 
 If the user named a file, use it. If `inputs/` is empty and there is no `work/`, say so and stop.

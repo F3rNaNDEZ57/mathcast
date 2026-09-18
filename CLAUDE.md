@@ -55,6 +55,11 @@ The **`ingest` skill** (`skills/ingest/SKILL.md`) is the stage above it: materia
 → `work/<lesson>/outline.md`, then **stop for review**. It is the one human gate in D5, and it
 exists because a misreading is cheap to fix in an outline and expensive after a render.
 
+The **`plan` skill** (`skills/plan/SKILL.md`) turns that outline into a scene split and beats.
+It is where **D2** is answered — per lesson, not globally: default to one scene, split only for
+length (>8 min), genuine independence, or risk isolation. There is no concatenation step, so a
+split costs a manual join.
+
 There is no orchestration script, and that is deliberate. The previous pipeline
 (`orchestrate.py`, `orchestrate.sh`, `extract_code.sh`, `extract_final.py`) shelled out to the
 Gemini CLI and parsed Python back out of a JSON response. It never completed a run end to end —
@@ -74,6 +79,7 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
 | `commands/init.md` | `/mathcast:init` — probe, scaffold, choose a speech service |
 | `skills/ingest/` | Material → outline. The review gate |
+| `skills/plan/` | Outline → scene split + beats. **Decides D2 per lesson** |
 | `skills/make-video/` | The render + repair + inspect loop |
 | `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
