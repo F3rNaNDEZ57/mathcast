@@ -19,9 +19,31 @@ Read the JSON after the `---MATHCAST-JSON---` marker. It tells you three things:
 | `network.ipv6_blackhole` | Whether scene rule 0 applies **on this machine** |
 | `tts.*` | Which speech services can actually be constructed |
 
-**If `manim`, `ffmpeg`, `latex` or `dvisvgm` is missing, stop and say so.** The plugin cannot
-install them. Point at what is missing and let the user install it. A missing `dvisvgm` in
-particular is easy to miss — LaTeX can be present and `MathTex` will still fail without it.
+### If something is missing
+
+Split by whether you can actually fix it.
+
+**Python packages — offer to install them.** If `toolchain.manim` or
+`toolchain.manim_voiceover` is `null`, say what is missing and offer this. Run it only if the
+user agrees; it is their environment, and they may want a virtualenv first.
+
+```bash
+pip install manim manim-voiceover gTTS
+```
+
+**System dependencies — you cannot install these.** If `ffmpeg`, `latex` or `dvisvgm` is
+missing, say so, give the right command for their platform, and **stop**. Do not continue to
+the smoke test; it will fail and the error will be confusing.
+
+| Missing | Windows | macOS | Debian/Ubuntu |
+|---|---|---|---|
+| FFmpeg | `winget install Gyan.FFmpeg` | `brew install ffmpeg` | `sudo apt install ffmpeg` |
+| LaTeX + `dvisvgm` | `winget install MiKTeX.MiKTeX` | `brew install --cask mactex` | `sudo apt install texlive-full` |
+
+A missing `dvisvgm` is the one to watch: LaTeX can be installed and `MathTex` will still fail
+without it. MiKTeX and TeX Live both ship it, but a minimal install may not.
+
+After they install anything, **re-run the probe** rather than assuming it worked.
 
 ## 2. Scaffold the project
 

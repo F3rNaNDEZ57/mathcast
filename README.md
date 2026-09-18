@@ -60,13 +60,14 @@ The plugin **cannot install these**. `/mathcast:init` probes for them and tells 
 | **LaTeX** — [MiKTeX](https://miktex.org/) or [TeX Live](https://tug.org/texlive/) | `MathTex` compilation | `latex --version` |
 | **`dvisvgm`** | Ships with both, but check — LaTeX can be present and `MathTex` still fails without it | `dvisvgm --version` |
 
-Python packages:
+Python packages — `/mathcast:init` will offer to install these for you, or do it yourself:
 
 ```bash
 pip install manim manim-voiceover gTTS
 ```
 
-Or `pip install -r requirements.txt` from a clone.
+`/mathcast:init` **cannot** install FFmpeg or LaTeX. If either is missing it tells you the
+command for your platform and stops, rather than failing confusingly later.
 
 ---
 
