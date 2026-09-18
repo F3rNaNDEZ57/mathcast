@@ -19,10 +19,15 @@ read lesson  →  write scene  →  manim -ql  ─┬─ error?  → read stderr
 
 ### 1. Read the lesson
 
-Read the file the user named. If they didn't name one, list `inputs/` and ask which.
+Prefer the most-processed artifact that exists. In order:
 
-If `work/<lesson>/<Scene>.script.md` exists, **use it** - an earlier stage already chose the
-scene split and wrote the narration. Don't re-derive them.
+| If this exists | Use it |
+|---|---|
+| `work/<lesson>/<Scene>.script.md` | The narration and beats are already chosen. Don't re-derive them |
+| `work/<lesson>/outline.md` | **The usual case today.** Concepts, maths and notation are extracted and a human has reviewed them. Read its *Flagged for review* section first - if something is flagged as blocked or inferred, raise it before animating it |
+| only `inputs/` | No outline yet. **Run the `ingest` skill first** - don't animate straight from raw material, because nobody has checked the extraction |
+
+If the user named a file, use it. If `inputs/` is empty and there is no `work/`, say so and stop.
 
 Decide the **scene class name** yourself from the content — `PascalCase`, descriptive
 (`GradientDescent`, `Chapter2Neuron`). Write it to `generated/<snake_case_name>.py`. Tell the

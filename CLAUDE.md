@@ -51,6 +51,10 @@ failure mode under a new name.
 `/mathcast:init` (`commands/init.md`) sets a project up: probes the toolchain and network,
 scaffolds the folders, and picks a speech service.
 
+The **`ingest` skill** (`skills/ingest/SKILL.md`) is the stage above it: material in `inputs/`
+→ `work/<lesson>/outline.md`, then **stop for review**. It is the one human gate in D5, and it
+exists because a misreading is cheap to fix in an outline and expensive after a render.
+
 There is no orchestration script, and that is deliberate. The previous pipeline
 (`orchestrate.py`, `orchestrate.sh`, `extract_code.sh`, `extract_final.py`) shelled out to the
 Gemini CLI and parsed Python back out of a JSON response. It never completed a run end to end —
@@ -69,6 +73,7 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
 |---|---|
 | `.claude-plugin/` | `plugin.json` + `marketplace.json` |
 | `commands/init.md` | `/mathcast:init` — probe, scaffold, choose a speech service |
+| `skills/ingest/` | Material → outline. The review gate |
 | `skills/make-video/` | The render + repair + inspect loop |
 | `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
