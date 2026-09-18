@@ -1,4 +1,18 @@
-import ipv4_first  # noqa: F401  - IPv6 is black-holed here; see the module docstring
+"""mathcast toolchain smoke test - Manim + LaTeX + gTTS + FFmpeg together.
+
+Machine-neutral on purpose. The IPv6 shim is applied ONLY if the project being
+tested has its own ./ipv4_first.py, which /mathcast:init writes only where it
+probed the black-hole fault. A healthy machine must not be forced onto IPv4.
+"""
+
+import os
+import sys
+
+_shim = os.path.join(os.getcwd(), "ipv4_first.py")
+if os.path.exists(_shim):
+    sys.path.insert(0, os.getcwd())
+    import ipv4_first  # noqa: F401,E402  - project opted in via /mathcast:init
+
 
 from manim import *
 from manim_voiceover import VoiceoverScene

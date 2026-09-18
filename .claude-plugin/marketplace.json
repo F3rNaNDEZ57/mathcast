@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "mathcast",
+  "description": "Narrated Manim animations from learning material",
+  "owner": {
+    "name": "F3rNaNDEZ57"
+  },
+  "plugins": [
+    {
+      "name": "mathcast",
+      "description": "Turn maths and science learning material into narrated Manim animations - ingest, plan, script, render, repair, inspect.",
+      "author": {
+        "name": "F3rNaNDEZ57"
+      },
+      "category": "education",
+      "source": "./",
+      "homepage": "https://github.com/F3rNaNDEZ57/mathcast"
+    }
+  ]
+}
