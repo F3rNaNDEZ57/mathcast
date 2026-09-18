@@ -104,8 +104,16 @@ For each beat record: **what is said** (gist, not final wording — that is the 
 2. **Respect the scene rules.** `MathTex` for all maths, relative positioning only, clear
    between parts. They live in the `make-video` skill; the plan must not propose something
    that violates them.
-3. **Budget the time.** Narration drives pacing — roughly 150 words per minute. A beat whose
-   narration is one short sentence cannot carry a 10-second animation.
+3. **Budget the time from word count, not from beat count.** Narration drives pacing —
+   roughly 150 words per minute, and Kokoro runs slightly faster than that.
+
+   > **Measured 2026-09-18:** a plan budgeted at 5m 30s for 5 parts rendered at **2m 16s** —
+   > a 2.4x overestimate. Per-beat guesses compound badly. Write the narration gist first,
+   > count the words, divide by 150. If a scene's beats total under ~750 words it is not a
+   > five-minute scene, whatever the beat count suggests.
+
+   This matters for the split decision: an inflated estimate will split a lesson that did not
+   need splitting, and the split costs a manual join.
 4. **Keep worked examples whole.** Their steps are the best animation material in any lesson;
    never collapse one into its result.
 5. **Say what gets cleared.** Screen state between parts is where layout defects come from.
@@ -124,6 +132,8 @@ outline blocked it, and the risks you flagged. Then continue — `make-video` ca
   missing formula is the single worst failure available here, because it renders cleanly and
   is wrong.
 - **Splitting by default.** Concatenation doesn't exist. One scene unless you can state why not.
+  Check the word-count budget before invoking the length threshold - beat-count intuition
+  overestimated by 2.4x the one time it was measured.
 - **Over-specifying narration.** Gist only. Exact wording is the script stage's job, and
   narration written here tends to read like prose rather than speech.
 - **Forgetting `\|` in outline tables.** Outlines contain LaTeX; a raw `|` inside a Markdown

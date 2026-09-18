@@ -7,6 +7,12 @@ generated/
 # Per-lesson working files: outline, plan, script, config
 work/
 
+# Learning material belongs to whoever put it there, not to this repo - and this
+# repo is public. The one exception is the project's own design brief, which was
+# already tracked before inputs/ existed.
+inputs/*
+!inputs/Automating Manim Video Creation.md
+
 # Written into a project by /mathcast:init only when the IPv6 probe fails.
 # The template lives at assets/ipv4_first.py and IS tracked.
 /ipv4_first.py

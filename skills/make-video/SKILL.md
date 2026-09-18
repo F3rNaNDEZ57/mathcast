@@ -140,6 +140,15 @@ Non-negotiable — generated code must obey all of these.
 
 ### Traps
 
+- **`get_parts_by_tex` does not exist in Manim CE.** It is a `manimgl` idiom. Manim CE has
+  `get_part_by_tex` (singular, first match only). Reaching for the plural one fails with
+  `TypeError: Mobject.__getattr__.<locals>.getter() takes 1 positional argument` - an opaque
+  error that means "this method does not exist". Measured 2026-09-18.
+- **`substrings_to_isolate` silently does nothing on a single-string `MathTex`.** It returns
+  one submobject, so per-symbol highlighting is unavailable. To highlight parts, pass the
+  equation as **several args** and index them - and put a `\;` at the end of an arg that
+  precedes another, because adjacent args get no inter-token spacing and will collide.
+  `Brace(part, DOWN).get_text("...")` is more legible than colouring glyphs anyway.
 - **`set_color_by_tex` matches substrings.** `set_color_by_tex("b", YELLOW)` also colours
   `\mathbf{...}` via the `b` in `mathbf`. Use `set_color_by_tex_to_color_map`, or index the
   `MathTex` parts directly.
