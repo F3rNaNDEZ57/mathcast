@@ -118,8 +118,13 @@ Claims need evidence. Run the smoke test — it exercises Manim, LaTeX, the spee
 FFmpeg together:
 
 ```bash
-python -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
+python -B -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
 ```
+
+**`-B` is not optional.** Without it Python writes `__pycache__` into the installed plugin
+directory, which is shared, may be read-only, and can leave stale bytecode across a plugin
+update. Verified 2026-09-18: a smoke-test run without `-B` dirtied
+`<plugin>/assets/__pycache__`.
 
 If it passes, the environment is good and any later failure is in the generated scene. If it
 fails, the error is environmental — report it verbatim and stop.
