@@ -1,0 +1,17 @@
+{
+  "name": "mathcast",
+  "description": "Turn maths and science learning material - Markdown, PDFs, links - into narrated Manim animations. Ingest to an outline, plan the scenes, write the narration, render, repair what breaks, inspect the frames, and promote to final quality.",
+  "version": "0.1.0",
+  "author": {
+    "name": "F3rNaNDEZ57"
+  },
+  "homepage": "https://github.com/F3rNaNDEZ57/mathcast",
+  "keywords": [
+    "manim",
+    "voiceover",
+    "education",
+    "mathematics",
+    "video",
+    "tts"
+  ]
+}

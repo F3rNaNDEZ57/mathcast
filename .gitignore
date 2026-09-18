@@ -4,6 +4,17 @@ media/
 # Generated scenes are build artifacts, not source
 generated/
 
+# Per-lesson working files: outline, plan, script, config
+work/
+
+# Written into a project by /mathcast:init only when the IPv6 probe fails.
+# The template lives at assets/ipv4_first.py and IS tracked.
+/ipv4_first.py
+
+# Kokoro model files - 338 MB, belong in a shared cache, never in a repo
+*.onnx
+voices-*.bin
+
 # Python
 __pycache__/
 *.py[cod]

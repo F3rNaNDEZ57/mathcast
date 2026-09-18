@@ -1,11 +1,11 @@
 ---
 name: make-video
-description: Turn a Markdown lesson into a narrated Manim animation. Use when the user asks to make, generate, render, or re-render a video, animation, or explainer from a lesson/chapter/note in context/, or names a Manim scene to build or fix. Handles the whole loop - write the scene, render, repair errors, check layout, promote to final quality.
+description: Turn a lesson into a narrated Manim animation. Use when the user asks to make, generate, render, or re-render a video, animation, or explainer from a lesson/chapter/note in inputs/ or work/, or names a Manim scene to build or fix. Handles the whole loop - write the scene, render, repair errors, check layout, promote to final quality.
 ---
 
 # Make a narrated Manim video from a Markdown lesson
 
-Turn prose in `context/*.md` into a rendered, narrated animation. You write the scene, render
+Turn prose in `inputs/` (or a `work/<lesson>/*.script.md` written by an earlier stage) into a rendered, narrated animation. You write the scene, render
 it, fix what breaks, look at the result, and only then pay for a final-quality render.
 
 ## The loop
@@ -19,7 +19,10 @@ read lesson  →  write scene  →  manim -ql  ─┬─ error?  → read stderr
 
 ### 1. Read the lesson
 
-Read the file the user named. If they didn't name one, list `context/*.md` and ask which.
+Read the file the user named. If they didn't name one, list `inputs/` and ask which.
+
+If `work/<lesson>/<Scene>.script.md` exists, **use it** - an earlier stage already chose the
+scene split and wrote the narration. Don't re-derive them.
 
 Decide the **scene class name** yourself from the content — `PascalCase`, descriptive
 (`GradientDescent`, `Chapter2Neuron`). Write it to `generated/<snake_case_name>.py`. Tell the
@@ -90,14 +93,29 @@ Report the output path, the duration, and anything you changed and why.
 
 Non-negotiable — generated code must obey all of these.
 
-0. **First line of every scene file:** `import ipv4_first`
-   IPv6 is advertised but black-holed on this network, so every HTTPS request stalls
-   ~21s in Windows SYN retries before falling back to IPv4. gTTS makes ~4 requests per
-   clip, so without this a narration clip costs ~85s instead of ~0.6s. Measured 2026-09-17.
+0. **`import ipv4_first` as the first import - but only if `./ipv4_first.py` exists.**
+   `/mathcast:init` writes that file only on machines where it probed an IPv6 black-hole
+   (IPv6 advertised but unroutable, so every HTTPS request stalls ~21s in SYN retries
+   before falling back). gTTS makes ~4 requests per clip, so on an affected machine a
+   narration clip costs ~85s instead of ~0.6s - measured 2026-09-17.
+   **If the file is not there, the machine does not have the fault. Do not add the import.**
+   It is also irrelevant when the speech service is Kokoro, which never touches the network.
 1. **Inherit from `VoiceoverScene`** (`from manim_voiceover import VoiceoverScene`).
-2. **Set the speech service first** in `construct()`:
+2. **Set the speech service first** in `construct()`. Use whatever `work/mathcast.json`
+   records - `/mathcast:init` wrote it. Default:
    `self.set_speech_service(GTTSService())`
    (`from manim_voiceover.services.gtts import GTTSService`)
+
+   For `"speech_service": "kokoro"`, pass the cached model paths explicitly - the package
+   otherwise downloads 338 MB into the working directory:
+   ```python
+   from kokoro_mv import KokoroService
+   self.set_speech_service(KokoroService(
+       voice="af_sarah", lang="en-us",
+       model_path=..., voices_path=...))   # paths from work/mathcast.json
+   ```
+   Kokoro costs ~1.4s/clip and needs no network. It returns no word boundaries; add
+   `transcription_model="base"` to any service if a scene uses `wait_until_bookmark()`.
 3. **Every animation lives in a voiceover block:**
    ```python
    with self.voiceover(text="...") as tracker:
@@ -130,6 +148,8 @@ Non-negotiable — generated code must obey all of these.
 
 | Path | |
 |---|---|
+| `inputs/` | The source material |
+| `work/<lesson>/` | outline, plan, script, `mathcast.json` |
 | `generated/<file>.py` | The scene you write |
 | `media/videos/<file>/480p15/` | Draft renders (`-ql`) |
 | `media/videos/<file>/1080p60/` | Final render (`-qh`) + `.srt` + `.wav` |
@@ -140,7 +160,7 @@ Non-negotiable — generated code must obey all of these.
 ## Check the toolchain first if something looks environmental
 
 ```bash
-manim -ql test_voiceover.py TestScene
+python -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
 ```
 
 That exercises Manim, LaTeX, gTTS, and FFmpeg together. If it passes, the problem is in the

@@ -1,4 +1,7 @@
-# CLAUDE.md — manim-voiceover
+# CLAUDE.md — mathcast
+
+> **Renamed 2026-09-18** (D6.1). This repo is becoming the **`mathcast`** Claude Code plugin.
+> The GitHub remote is still `F3rNaNDEZ57/manim_voiceover` until the user renames it.
 
 Machine-facing notes for this repo. The reasoning behind it lives in an Obsidian vault.
 
@@ -37,9 +40,16 @@ renders it, `manim-voiceover` synchronises TTS narration.
 
 ## How videos get made
 
-Use the **`make-video` skill** (`.claude/skills/make-video/SKILL.md`). It owns the whole loop:
-write the scene → `manim -ql` → repair errors → inspect rendered frames for layout problems →
-promote to `-qh`.
+Use the **`make-video` skill** (`skills/make-video/SKILL.md`). It owns the render half of the
+loop: write the scene → `manim -ql` → repair errors → inspect rendered frames for layout
+problems → promote to `-qh`.
+
+**That loop must stay in one context** (D5). It works because a single context holds the lesson,
+the scene, the traceback and the frames at once. Splitting it across subagents recreates D1's
+failure mode under a new name.
+
+`/mathcast:init` (`commands/init.md`) sets a project up: probes the toolchain and network,
+scaffolds the folders, and picks a speech service.
 
 There is no orchestration script, and that is deliberate. The previous pipeline
 (`orchestrate.py`, `orchestrate.sh`, `extract_code.sh`, `extract_final.py`) shelled out to the
@@ -53,13 +63,20 @@ They remain in git history at `f44b789` if ever needed.
 
 ## Layout
 
+Plugin assets are tracked; everything a *project* produces is gitignored.
+
 | Path | |
 |---|---|
-| `context/*.md` | Source lessons. The pedagogical input |
+| `.claude-plugin/` | `plugin.json` + `marketplace.json` |
+| `commands/init.md` | `/mathcast:init` — probe, scaffold, choose a speech service |
+| `skills/make-video/` | The render + repair + inspect loop |
+| `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
+| `assets/test_voiceover.py` | Toolchain smoke test |
+| `assets/ipv4_first.py` | IPv6 shim **template**. Copied into a project only if the probe finds the fault |
+| `inputs/` | Source material — md, pdf, links. *(was `context/`)* |
+| `work/<lesson>/` | outline · plan · script · `mathcast.json`. **Gitignored** |
 | `generated/*.py` | Generated scenes. **Build artifacts — gitignored** |
 | `media/` | Manim output: renders, TeX SVGs, TTS cache. **Gitignored** |
-| `test_voiceover.py` | Toolchain smoke test |
-| `.claude/skills/make-video/` | The generation + render loop |
 
 ## Conventions
 
@@ -68,6 +85,8 @@ They remain in git history at `f44b789` if ever needed.
   model named its class `Chapter2Neuron`, so the render could never have been found.
 - **Draft at `-ql`, ship at `-qh`.** A 1080p60 render with TTS costs minutes; never iterate there.
 - **Narration is written to be spoken** — `"x one"`, not `"x_1"`.
+- **Nothing machine-specific ships.** `import ipv4_first` is conditional on `./ipv4_first.py`
+  existing, which `/mathcast:init` writes only where it probed the fault (D6.2).
 - Full scene rules and known traps live in the skill, not here.
 
 ## Toolchain
@@ -75,8 +94,14 @@ They remain in git history at `f44b789` if ever needed.
 Python 3.13 · Manim CE · `manim-voiceover` + gTTS (cloud; needs network at render time) ·
 FFmpeg · MiKTeX/TeX Live.
 
-Verify the environment with `manim -ql test_voiceover.py TestScene`. If that passes, a failure
-is in the generated scene, not the setup.
+Verify the environment with `python assets/probe_env.py`, then
+`python -m manim -ql assets/test_voiceover.py TestScene`. If those pass, a failure is in the
+generated scene, not the setup.
+
+**Local TTS works** (D6.5): `kokoro-manim-voiceover` gives ~1.4s/clip with no network.
+Install it in **two steps** — `pip install kokoro-onnx soundfile` then
+`pip install kokoro-manim-voiceover --no-deps`. **Never the bare one-liner**: `manim-voiceover`
+pins `python-dotenv<0.22.0`, so it downgrades `python-dotenv` and breaks `fastmcp-slim`/`mcp`.
 
 ## After a task that changes project state
 
