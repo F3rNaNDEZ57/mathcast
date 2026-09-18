@@ -186,8 +186,10 @@ Non-negotiable — generated code must obey all of these.
 ## Check the toolchain first if something looks environmental
 
 ```bash
-python -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
+python -B -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
 ```
+
+`-B` keeps Python from writing `__pycache__` into the installed plugin directory.
 
 That exercises Manim, LaTeX, gTTS, and FFmpeg together. If it passes, the problem is in the
 generated scene, not the setup.
