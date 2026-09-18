@@ -11,7 +11,7 @@ work/
 # repo is public. The one exception is the project's own design brief, which was
 # already tracked before inputs/ existed.
 inputs/*
-!inputs/Automating Manim Video Creation.md
+!inputs/.gitkeep
 
 # Written into a project by /mathcast:init only when the IPv6 probe fails.
 # The template lives at assets/ipv4_first.py and IS tracked.

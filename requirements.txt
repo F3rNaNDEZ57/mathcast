@@ -1,12 +1,31 @@
-# Core rendering
-manim>=0.18.0
+# mathcast - Python dependencies
+#
+# System dependencies are NOT installable from here. You also need FFmpeg and a
+# LaTeX distribution (MiKTeX or TeX Live) including dvisvgm, all on PATH.
+# Run `python assets/probe_env.py` to check what is actually present.
 
-# Voiceover plugin + the speech service actually in use.
+# Core rendering
+manim>=0.19.0
+
+# Voiceover plugin, and the default speech service.
 # gTTS is cloud-based and needs network at render time.
 manim-voiceover>=0.3.7
 gTTS
 
-# Local TTS (offline, better voices, word-level timing) is unbuilt - see D3 in the
-# vault's Open Decisions. It needs ~2.5GB of torch and was previously listed here
-# despite nothing importing it. Uncomment only when a local service is wired up:
-# manim-voiceover[coqui]
+# --- Optional: local, offline narration (recommended) -----------------------
+# Kokoro-82M. Apache-2.0, ~1.4s per clip, no API key, no network once cached.
+# Install in TWO steps, never as a single `pip install kokoro-manim-voiceover`:
+#
+#   pip install kokoro-onnx soundfile
+#   pip install kokoro-manim-voiceover --no-deps
+#
+# The one-liner drags in manim-voiceover's python-dotenv<0.22.0 pin, which
+# downgrades python-dotenv and breaks fastmcp-slim and mcp. --no-deps also
+# avoids manim-dsa, a declared dependency the package never imports.
+# kokoro-onnx
+# soundfile
+# kokoro-manim-voiceover
+
+# --- Optional: word-level timing for wait_until_bookmark() ------------------
+# Works with ANY speech service via transcription_model="base".
+# manim-voiceover[transcribe]
