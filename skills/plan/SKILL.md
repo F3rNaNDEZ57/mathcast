@@ -48,6 +48,20 @@ parts, 20 voiceover blocks and 41 animations as a single scene at 2:42, and that
 > multiple scenes means multiple MP4s and a manual join. That cost is real — record it at the
 > top of `plan.md` so nobody discovers it after rendering.
 
+**And plan the cut itself.** Measured 2026-09-18 on the first real split: `ffmpeg concat -c copy`
+joins cleanly and the durations add up exactly — but scene A ended on a finished curve while
+scene B opened by `Create`-ing its axes from scratch, so the joined video **visibly resets** at
+the seam. Mechanically fine, editorially obvious.
+
+If you split, pick one and write it into the plan:
+
+| Option | |
+|---|---|
+| **Hand off the state** | Scene B opens already showing what scene A ended on — no rebuild, no `Create` of shared furniture. Closest to invisible |
+| **Own the cut** | A deliberate title card or a clean fade to black. A cut that looks intended reads far better than one that looks like a glitch |
+
+Never leave it unplanned — that is how you get the accidental redraw.
+
 ## 2. Name the scenes
 
 `PascalCase`, derived from content: `ArtificialNeuron`, `GradientDescent`, `ChainRule`. One
@@ -104,12 +118,13 @@ For each beat record: **what is said** (gist, not final wording — that is the 
 2. **Respect the scene rules.** `MathTex` for all maths, relative positioning only, clear
    between parts. They live in the `make-video` skill; the plan must not propose something
    that violates them.
-3. **Budget the time from word count, not from beat count.** Narration drives pacing —
-   roughly 150 words per minute, and Kokoro runs slightly faster than that.
+3. **Budget the time from word count, not from beat count.** Narration drives pacing, and
+   Kokoro `af_sarah` at speed 1.0 was **measured at 177 words per minute** across two scenes
+   (agreeing to 0.2 wpm). About 3 words a second.
 
    > **Measured 2026-09-18:** a plan budgeted at 5m 30s for 5 parts rendered at **2m 16s** —
    > a 2.4x overestimate. Per-beat guesses compound badly. Write the narration gist first,
-   > count the words, divide by 150. If a scene's beats total under ~750 words it is not a
+   > count the words, divide by 177. If a scene's beats total under ~880 words it is not a
    > five-minute scene, whatever the beat count suggests.
 
    This matters for the split decision: an inflated estimate will split a lesson that did not
