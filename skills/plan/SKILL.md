@@ -48,6 +48,20 @@ parts, 20 voiceover blocks and 41 animations as a single scene at 2:42, and that
 > multiple scenes means multiple MP4s and a manual join. That cost is real — record it at the
 > top of `plan.md` so nobody discovers it after rendering.
 
+**And plan the cut itself.** Measured 2026-09-18 on the first real split: `ffmpeg concat -c copy`
+joins cleanly and the durations add up exactly — but scene A ended on a finished curve while
+scene B opened by `Create`-ing its axes from scratch, so the joined video **visibly resets** at
+the seam. Mechanically fine, editorially obvious.
+
+If you split, pick one and write it into the plan:
+
+| Option | |
+|---|---|
+| **Hand off the state** | Scene B opens already showing what scene A ended on — no rebuild, no `Create` of shared furniture. Closest to invisible |
+| **Own the cut** | A deliberate title card or a clean fade to black. A cut that looks intended reads far better than one that looks like a glitch |
+
+Never leave it unplanned — that is how you get the accidental redraw.
+
 ## 2. Name the scenes
 
 `PascalCase`, derived from content: `ArtificialNeuron`, `GradientDescent`, `ChainRule`. One
