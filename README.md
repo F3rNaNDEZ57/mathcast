@@ -9,15 +9,17 @@ result, and produces an MP4 with synchronised narration and subtitles.
 > **Status: early.** The render loop is proven — a 2:42 narrated animation was generated,
 > repaired and shipped end to end on 2026-09-17. The plugin packaging around it landed
 > 2026-09-18 and is newer than that: `/mathcast:init` is written and its environment probe is
-> verified, but the command itself has not been exercised end to end. The ingest stage (PDFs,
-> links) is not built yet. Expect to steer it.
+> verified, but the command itself has not been exercised end to end. The **ingest stage is
+> built and has been run** on real material; its PDF and link paths are not yet exercised.
+> Planning and scripting stages don't exist — `make-video` reads the outline directly for now.
+> Expect to steer it.
 
 ## How it works
 
 ```
 inputs/                        your material - md, pdf, links
    │
-   ├─[ ingest ]──→ work/<lesson>/outline.md        ◀ the one review gate  (not built yet)
+   ├─[ ingest ]──→ work/<lesson>/outline.md        ◀ the one review gate   ✅ built
    ├─[ plan ]────→ work/<lesson>/plan.md            (not built yet)
    ├─[ script ]──→ <Scene>.script.md                (not built yet)
    │
@@ -96,10 +98,18 @@ Word-level timing (`wait_until_bookmark()`) does not depend on the service — p
 
 ## Make a video
 
-Put material in `inputs/`, then ask:
+Put material in `inputs/` — Markdown, PDFs, text, or a file of links — then:
 
 ```
-make a video from inputs/your-lesson.md
+ingest inputs/
+```
+
+That extracts everything into `work/<lesson>/outline.md` and **stops**, so you can check what
+it actually understood before anything expensive runs. Read the outline, especially its
+*Flagged for review* section, then:
+
+```
+make a video from work/artificial-neuron/outline.md
 ```
 
 The `make-video` skill takes it from there — writing the scene, rendering a draft, repairing
@@ -115,6 +125,7 @@ means unchanged narration isn't re-synthesised.
 |---|---|
 | `.claude-plugin/` | `plugin.json` and `marketplace.json` |
 | `commands/init.md` | `/mathcast:init` |
+| `skills/ingest/` | Material → `work/<lesson>/outline.md`, the review gate |
 | `skills/make-video/` | The render, repair and inspect loop |
 | `assets/probe_env.py` | Toolchain, network and TTS probe — bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
