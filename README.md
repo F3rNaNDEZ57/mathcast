@@ -11,8 +11,9 @@ result, and produces an MP4 with synchronised narration and subtitles.
 > 2026-09-18 and is newer than that: `/mathcast:init` is written and its environment probe is
 > verified, but the command itself has not been exercised end to end. The **ingest stage is
 > built and has been run** on real material; its PDF and link paths are not yet exercised.
-> The **plan stage is built** and exercised. The scripting stage doesn't exist, so `make-video`
-> reads `plan.md` directly for now.
+> **All four stages are built** and the chain has been run end to end on a real PDF. What is
+> thin: `/mathcast:init` has never been run as a command, PDFs over 10 pages and link
+> ingestion are untested, and a split scene join works but shows a visible seam.
 > Expect to steer it.
 
 ## How it works
@@ -22,7 +23,7 @@ inputs/                        your material - md, pdf, links
    │
    ├─[ ingest ]──→ work/<lesson>/outline.md        ◀ the one review gate   ✅ built
    ├─[ plan ]────→ work/<lesson>/plan.md            scene split, beats   ✅ built
-   ├─[ script ]──→ <Scene>.script.md                (not built yet)
+   ├─[ script ]──→ <Scene>.script.md                spoken narration     ✅ built
    │
    └─[ write scene → manim -ql → read error → fix → inspect frames → manim -qh ]   ◀ proven
                          │
@@ -128,6 +129,7 @@ means unchanged narration isn't re-synthesised.
 | `commands/init.md` | `/mathcast:init` |
 | `skills/ingest/` | Material → `work/<lesson>/outline.md`, the review gate |
 | `skills/plan/` | Outline → `work/<lesson>/plan.md`: scene split, beats, risks |
+| `skills/script/` | Plan → `<Scene>.script.md`: the exact spoken narration |
 | `skills/make-video/` | The render, repair and inspect loop |
 | `assets/probe_env.py` | Toolchain, network and TTS probe — bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |

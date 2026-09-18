@@ -80,6 +80,7 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
 | `commands/init.md` | `/mathcast:init` — probe, scaffold, choose a speech service |
 | `skills/ingest/` | Material → outline. The review gate |
 | `skills/plan/` | Outline → scene split + beats. **Decides D2 per lesson** |
+| `skills/script/` | Plan → the exact spoken narration, word-counted |
 | `skills/make-video/` | The render + repair + inspect loop |
 | `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
@@ -95,7 +96,9 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
   Nothing defaults to a fixed name — a previous version assumed `GeneratedScene` while the
   model named its class `Chapter2Neuron`, so the render could never have been found.
 - **Draft at `-ql`, ship at `-qh`.** A 1080p60 render with TTS costs minutes; never iterate there.
-- **Narration is written to be spoken** — `"x one"`, not `"x_1"`.
+- **Narration is written to be spoken** — `"x one"`, not `"x_1"`. The `script` skill owns this.
+- **Kokoro `af_sarah` speaks at ~177 words per minute** (measured over two scenes, 889 words).
+  Scene length is `words / 177`, not a per-beat guess.
 - **Nothing machine-specific ships.** `import ipv4_first` is conditional on `./ipv4_first.py`
   existing, which `/mathcast:init` writes only where it probed the fault (D6.2).
 - Full scene rules and known traps live in the skill, not here.

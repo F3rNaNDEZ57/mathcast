@@ -118,12 +118,13 @@ For each beat record: **what is said** (gist, not final wording — that is the 
 2. **Respect the scene rules.** `MathTex` for all maths, relative positioning only, clear
    between parts. They live in the `make-video` skill; the plan must not propose something
    that violates them.
-3. **Budget the time from word count, not from beat count.** Narration drives pacing —
-   roughly 150 words per minute, and Kokoro runs slightly faster than that.
+3. **Budget the time from word count, not from beat count.** Narration drives pacing, and
+   Kokoro `af_sarah` at speed 1.0 was **measured at 177 words per minute** across two scenes
+   (agreeing to 0.2 wpm). About 3 words a second.
 
    > **Measured 2026-09-18:** a plan budgeted at 5m 30s for 5 parts rendered at **2m 16s** —
    > a 2.4x overestimate. Per-beat guesses compound badly. Write the narration gist first,
-   > count the words, divide by 150. If a scene's beats total under ~750 words it is not a
+   > count the words, divide by 177. If a scene's beats total under ~880 words it is not a
    > five-minute scene, whatever the beat count suggests.
 
    This matters for the split decision: an inflated estimate will split a lesson that did not

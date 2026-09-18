@@ -23,8 +23,8 @@ Prefer the most-processed artifact that exists. In order:
 
 | If this exists | Use it |
 |---|---|
-| `work/<lesson>/<Scene>.script.md` | The narration and beats are already chosen. Don't re-derive them |
-| `work/<lesson>/plan.md` | **The usual case today.** Scene split, beats, timings and risks are chosen. Build exactly the parts it lists - if it records something as *omitted*, leave it out rather than helpfully restoring it |
+| `work/<lesson>/<Scene>.script.md` | **Best case.** The exact narration is written and word-counted. Use each beat's blockquote **verbatim** as the `self.voiceover(text=...)` string - don't paraphrase it, it was written to be spoken and the word count is the scene's timing |
+| `work/<lesson>/plan.md` | Scene split, beats, timings and risks are chosen, but the narration is only a gist. Run the `script` skill first if the user wants to shape the wording; otherwise write the narration inline. Build exactly the parts it lists - if it records something as *omitted*, leave it out rather than helpfully restoring it |
 | `work/<lesson>/outline.md` | Concepts, maths and notation extracted and reviewed, but no scene plan yet. Run the `plan` skill first, or plan inline if the lesson is obviously one scene. Read its *Flagged for review* section either way |
 | only `inputs/` | No outline yet. **Run the `ingest` skill first** - don't animate straight from raw material, because nobody has checked the extraction |
 
@@ -157,6 +157,8 @@ Non-negotiable — generated code must obey all of these.
 - **A mobject created inside a `with` block is still in scope after it** — but only if that
   block ran. Don't reference a mobject from a branch that may not have executed.
 - **Narration length drives pacing.** A 3-second line cannot carry a 10-second animation.
+  Kokoro `af_sarah` speaks at **~177 words per minute**, about 3 words a second - measured over
+  two scenes, 889 words. Use it to sanity-check a beat before rendering.
   Match the text to the visual work.
 
 ## Output layout
