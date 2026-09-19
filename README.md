@@ -51,7 +51,7 @@ highlighted. **All three rendered without any error at all.**
 
 ## Requirements
 
-The plugin **cannot install these**. `/mathcast:init` probes for them and tells you what's missing.
+`/mathcast:init` probes for these and, where it can, offers to install them.
 
 | | Why | Check |
 |---|---|---|
@@ -59,15 +59,22 @@ The plugin **cannot install these**. `/mathcast:init` probes for them and tells 
 | **FFmpeg** | Muxing video and audio | `ffmpeg -version` |
 | **LaTeX** — [MiKTeX](https://miktex.org/) or [TeX Live](https://tug.org/texlive/) | `MathTex` compilation | `latex --version` |
 | **`dvisvgm`** | Ships with both, but check — LaTeX can be present and `MathTex` still fails without it | `dvisvgm --version` |
+| **`pkg-config`** *(macOS only)* | `pip install manim` fails building `pycairo` without it | `pkg-config --version` |
 
-Python packages — `/mathcast:init` will offer to install these for you, or do it yourself:
+**`/mathcast:init` can set most of this up for you.** It detects which package managers are
+actually on your machine — `winget`, `choco`, `scoop`, `brew`, `apt`, `dnf`, `pacman` — tells you
+exactly what it proposes to run and how big the download is, and **asks before installing
+anything**.
 
 ```bash
-pip install manim manim-voiceover gTTS
+pip install manim manim-voiceover gTTS      # or let init offer it
 ```
 
-`/mathcast:init` **cannot** install FFmpeg or LaTeX. If either is missing it tells you the
-command for your platform and stops, rather than failing confusingly later.
+Two deliberate limits:
+
+- **It never runs `sudo`.** On Linux it prints the command for you to run in your own shell,
+  where you can see what it's asking for.
+- **If no package manager is found** it gives you the official download links and stops.
 
 ---
 
@@ -115,7 +122,8 @@ In the directory where you want your videos:
 
 It probes rather than assumes, then:
 
-1. **Reports your toolchain** — versions and what's missing. Stops if it can't render.
+1. **Reports your toolchain** — versions and what's missing, then offers to install what it
+   can, asking first and telling you the download size. It never runs `sudo`.
 2. **Checks your network** for a black-holed IPv6 route — a real and surprisingly common fault
    where IPv6 is advertised but unroutable, which makes every cloud-TTS call stall ~21s. On an
    affected machine that turns a 56-second render into 65 minutes.
