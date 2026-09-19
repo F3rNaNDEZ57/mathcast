@@ -22,21 +22,12 @@ narration and subtitles.
 
 ## What it does
 
-```
-inputs/                          your material — .md, .pdf, .txt, or a file of links
-   │
-   ├─[ ingest ]──→ work/<lesson>/outline.md       ◀ the one review gate — it stops here
-   ├─[ plan ]────→ work/<lesson>/plan.md            scene split, beats, risks
-   ├─[ script ]──→ <Scene>.script.md                the exact spoken narration
-   │
-   └─[ make-video ]  write scene → manim -ql → read error → fix → inspect frames → manim -qh
-                         │
-                         ▼
-            media/videos/<scene>/1080p60/<Scene>.mp4  +  .srt
-```
+<p align="center">
+  <img src="docs/pipeline.svg" alt="mathcast pipeline: install the plugin and run /mathcast:init once per machine; then per lesson, put a PDF in inputs, ingest it into work/lesson/outline.md which stops for your review, then plan, script and make-video produce an MP4 with subtitles in media/videos." width="680">
+</p>
 
-Each stage writes a file you can read and edit. Only **ingest** stops for you — a misreading is
-cheap to fix in an outline and expensive after a render.
+Each stage writes a file you can read and edit. **Only `ingest` stops for you** — a misreading is
+cheap to fix in an outline and expensive after a render. Everything after it runs through.
 
 **The repair loop is the point.** Generated Manim code fails in four ways: syntax errors, runtime
 errors, **layout errors** (overlapping labels, off-screen objects), and pedagogical errors. A
@@ -232,12 +223,15 @@ Splitting is deliberately rare — the default is one scene per lesson.
 - Frame inspection catching layout *and* semantic defects
 - Kokoro local narration, and duration prediction accurate to ~4% from word count
 - Installing and updating from the marketplace
+- `/mathcast:init` run end to end against a clean project, including package-manager detection
 
 **Not yet exercised**
 - PDFs over 10 pages — every input so far has been short
 - Link ingestion — written, never run
 - LaTeX compile errors in the repair loop
 - A split scene join without a visible seam at the cut
+- `init`'s **`brew` and `sudo` hand-off branches** — developed on Windows, so only the
+  `winget`/`choco` paths have actually run
 
 Expect to steer it.
 
@@ -258,6 +252,7 @@ Expect to steer it.
 | `assets/ipv4_first_template.py` | IPv6 shim, copied into a project **only** if the probe finds the fault |
 | `inputs/` | Your material — gitignored |
 | `work/`, `generated/`, `media/` | Working files and output — gitignored |
+| `docs/pipeline.svg` | The diagram at the top of this file |
 | `CLAUDE.md` | Notes for anyone (or any agent) working on the plugin itself |
 
 ---
