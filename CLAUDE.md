@@ -3,8 +3,6 @@
 Machine-facing notes for anyone — human or agent — working on the **plugin itself**.
 If you just want to *use* mathcast, read `README.md` instead.
 
-Machine-facing notes for this repo. The reasoning behind it lives in an Obsidian vault.
-
 ## The design constraints that matter
 
 These are the decisions most likely to be undone by someone who doesn't know why they exist.
@@ -79,7 +77,7 @@ Plugin assets are tracked; everything a *project* produces is gitignored.
 | `skills/make-video/` | The render + repair + inspect loop |
 | `assets/probe_env.py` | Toolchain + IPv6 + TTS probe. Bounded timeouts, never hangs |
 | `assets/test_voiceover.py` | Toolchain smoke test |
-| `assets/ipv4_first.py` | IPv6 shim **template**. Copied into a project only if the probe finds the fault |
+| `assets/ipv4_first_template.py` | IPv6 shim **template**. Copied into a project as `./ipv4_first.py` only if the probe finds the fault |
 | `inputs/` | Source material — md, pdf, links. **Gitignored — it is the user's** |
 | `work/<lesson>/` | outline · plan · script · `mathcast.json`. **Gitignored** |
 | `generated/*.py` | Generated scenes. **Build artifacts — gitignored** |
