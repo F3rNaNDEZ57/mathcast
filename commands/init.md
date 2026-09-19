@@ -15,35 +15,72 @@ Read the JSON after the `---MATHCAST-JSON---` marker. It tells you three things:
 
 | Field | What it decides |
 |---|---|
+| `platform.*` | Which install commands are even possible on this machine |
 | `toolchain.*` | Whether rendering can work at all |
 | `network.ipv6_blackhole` | Whether scene rule 0 applies **on this machine** |
 | `tts.*` | Which speech services can actually be constructed |
 
 ### If something is missing
 
-Split by whether you can actually fix it.
+**Ask before installing anything. Every time.** Say what is missing, what you propose to run,
+and roughly how big it is. Then wait. Installing software on someone's machine is not a step to
+take on their behalf because it is convenient.
 
-**Python packages — offer to install them.** If `toolchain.manim` or
-`toolchain.manim_voiceover` is `null`, say what is missing and offer this. Run it only if the
-user agrees; it is their environment, and they may want a virtualenv first.
+#### Python packages — offer, then run
+
+If `toolchain.manim` or `toolchain.manim_voiceover` is `null`:
 
 ```bash
 pip install manim manim-voiceover gTTS
 ```
 
-**System dependencies — you cannot install these.** If `ffmpeg`, `latex` or `dvisvgm` is
-missing, say so, give the right command for their platform, and **stop**. Do not continue to
-the smoke test; it will fail and the error will be confusing.
+Scoped to their Python environment and easy to undo, so it is fine to run once they agree.
+Mention a virtualenv if they are in a bare global environment.
 
-| Missing | Windows | macOS | Debian/Ubuntu |
-|---|---|---|---|
-| FFmpeg | `winget install Gyan.FFmpeg` | `brew install ffmpeg` | `sudo apt install ffmpeg` |
-| LaTeX + `dvisvgm` | `winget install MiKTeX.MiKTeX` | `brew install --cask mactex` | `sudo apt install texlive-full` |
+#### System dependencies — use what the probe actually found
 
-A missing `dvisvgm` is the one to watch: LaTeX can be installed and `MathTex` will still fail
-without it. MiKTeX and TeX Live both ship it, but a minimal install may not.
+`platform.package_managers` lists the managers **present on this machine**. Do not infer them
+from the OS — Manim's own documentation declines to give per-distro instructions for exactly
+this reason. Build the command from what is there:
 
-After they install anything, **re-run the probe** rather than assuming it worked.
+| Manager | FFmpeg | LaTeX |
+|---|---|---|
+| `winget` | `winget install --id Gyan.FFmpeg -e` | `winget install --id MiKTeX.MiKTeX -e` |
+| `choco` | `choco install ffmpeg` | `choco install miktex` |
+| `scoop` | `scoop install ffmpeg` | `scoop install latex` |
+| `brew` | `brew install ffmpeg` | `brew install --cask mactex` |
+| `apt-get` | `sudo apt-get install ffmpeg` | `sudo apt-get install texlive texlive-latex-extra dvisvgm` |
+| `dnf` | `sudo dnf install ffmpeg` | `sudo dnf install texlive-scheme-medium texlive-dvisvgm` |
+| `pacman` | `sudo pacman -S ffmpeg` | `sudo pacman -S texlive-core texlive-binextra` |
+
+> **Never run a `sudo` command.** Anything in `platform.needs_sudo` gets handed to the user to
+> run themselves, in their own shell, where they can see what it is asking for. Print it and
+> wait — do not run it, and do not offer to.
+>
+> `platform.runnable_without_sudo` (winget, choco, scoop, brew) you may run **after they agree**.
+> `winget` may raise its own UAC prompt; that is their consent moment, not a failure.
+
+**Sizes, so the ask is informed.** FFmpeg is ~100 MB. A LaTeX distribution is the big one:
+MiKTeX ~200 MB installing packages on demand, MacTeX ~4 GB, a full TeX Live ~5 GB. Say so before
+they agree — do not start a multi-gigabyte download on a shrug.
+
+**If `platform.package_managers` is empty**, there is nothing to offer. Give the official
+downloads and stop: [FFmpeg](https://ffmpeg.org/download.html) ·
+[MiKTeX](https://miktex.org/download) · [MacTeX](https://www.tug.org/mactex/) ·
+[TeX Live](https://www.tug.org/texlive/).
+
+#### Two specifics worth catching
+
+- **`dvisvgm` is the one that hides.** LaTeX can be installed and `MathTex` will still fail
+  without it. On Debian it is a separate package; on MiKTeX and MacTeX it ships in the box.
+- **macOS needs `pkg-config`** (`brew install pkg-config`) or `pip install manim` fails while
+  building `pycairo`. The probe checks this on Darwin only.
+
+#### Then
+
+**Re-run the probe** rather than assuming an install worked. Installers fail, and PATH often
+needs a new shell. If it still reports something missing, say so and **stop** — do not continue
+to the smoke test, which would fail with an error that does not name the real cause.
 
 ## 2. Scaffold the project
 

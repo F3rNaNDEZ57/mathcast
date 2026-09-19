@@ -15,9 +15,9 @@ Never hangs: every network probe is bounded by PROBE_TIMEOUT.
 from __future__ import annotations
 
 import json
+import platform
 import shutil
 import socket
-import subprocess
 import sys
 import time
 
@@ -26,13 +26,35 @@ PROBE_HOST = "translate.google.com"  # what gTTS actually talks to
 PROBE_PORT = 443
 SLOW_CONNECT = 1.0  # a connect slower than this is treated as a black-hole signal
 
-result: dict = {"toolchain": {}, "network": {}, "tts": {}}
+result: dict = {"platform": {}, "toolchain": {}, "network": {}, "tts": {}}
 
 
 def _ok(label: str, good: bool, detail: str = "") -> None:
     mark = "OK  " if good else "MISS"
     print(f"  [{mark}] {label}{(' - ' + detail) if detail else ''}")
 
+
+print("\nplatform")
+# Detect the package managers ACTUALLY present rather than inferring them from
+# the OS. Manim's own docs decline to give per-distro instructions for exactly
+# this reason - "we cannot give detailed instructions for all package managers"
+# - so guessing apt from "Linux" would be guessing.
+_system = platform.system()
+_pm = [m for m in ("winget", "choco", "scoop", "brew", "apt-get", "dnf", "pacman", "zypper")
+       if shutil.which(m)]
+# Anything needing sudo must never be run unattended by an agent; it is handed to
+# the user instead. winget and brew install without sudo (winget may raise its own
+# UAC prompt, which is the user's own consent moment).
+_needs_sudo = {"apt-get", "dnf", "pacman", "zypper"}
+print(f"  system: {_system} {platform.release()}")
+print(f"  package managers: {', '.join(_pm) if _pm else 'none found'}")
+result["platform"] = {
+    "system": _system,
+    "release": platform.release(),
+    "package_managers": _pm,
+    "runnable_without_sudo": [m for m in _pm if m not in _needs_sudo],
+    "needs_sudo": [m for m in _pm if m in _needs_sudo],
+}
 
 # ---------------------------------------------------------------- toolchain
 print("\ntoolchain")
@@ -58,6 +80,21 @@ for exe, label in [("ffmpeg", "FFmpeg"), ("latex", "LaTeX")]:
 dvisvgm = shutil.which("dvisvgm")
 _ok("dvisvgm", bool(dvisvgm), dvisvgm or "not on PATH - MathTex will fail")
 result["toolchain"]["dvisvgm"] = dvisvgm
+
+# pycairo needs pkg-config to BUILD on macOS. Manim's install docs call it out
+# explicitly; without it `pip install manim` fails while compiling pycairo.
+if _system == "Darwin":
+    _pc = shutil.which("pkg-config")
+    _ok("pkg-config", bool(_pc), _pc or "not on PATH - pycairo will fail to build")
+    result["toolchain"]["pkg-config"] = _pc
+
+# pycairo needs these to BUILD on macOS. Manim's install docs call them out
+# explicitly; without them `pip install manim` fails while compiling pycairo.
+if _system == "Darwin":
+    for exe in ("pkg-config",):
+        path = shutil.which(exe)
+        _ok(exe, bool(path), path or "not on PATH - pycairo will fail to build")
+        result["toolchain"][exe] = path
 
 
 # ------------------------------------------------------------------ network
