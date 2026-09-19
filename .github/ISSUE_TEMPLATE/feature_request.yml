@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest something mathcast should do
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The situation, not the solution. What material do you have, and what do you want out of it?
+      placeholder: |
+        I have lecture slides rather than prose documents, and ingest expands the bullet
+        fragments into claims that aren't quite what I meant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you'd like instead
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        **Two things that are deliberate, not oversights**, so you know what you're arguing against:
+
+        - **Only `ingest` stops for you.** Adding gates at `plan` or `script` was considered and
+          rejected — a misreading is cheap to fix in an outline and expensive after a render, so
+          the pipeline stops once, at the cheapest moment.
+        - **The render loop stays in one context.** It works because one context holds the lesson,
+          the scene, the traceback and the frames at once. Splitting it across sub-agents breaks
+          the only part that's been proven.
+
+        Both are open to being argued with — just make the argument rather than assuming it's a gap.

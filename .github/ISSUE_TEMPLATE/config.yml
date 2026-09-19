@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question, idea, or something you made
+    url: https://github.com/F3rNaNDEZ57/mathcast/discussions
+    about: Discussions is better than an issue for questions, half-formed ideas, and showing off a video you generated.
+  - name: How it works, end to end
+    url: https://github.com/F3rNaNDEZ57/mathcast#what-it-does
+    about: The README has the pipeline diagram, requirements, and an honest account of what is and isn't proven.
