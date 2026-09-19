@@ -8,7 +8,7 @@ honestly. **Do not assume anything is installed** — this may be a machine you 
 ## 1. Probe the environment
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/assets/probe_env.py"
+python -B "${CLAUDE_PLUGIN_ROOT}/assets/probe_env.py"
 ```
 
 Read the JSON after the `---MATHCAST-JSON---` marker. It tells you three things:
@@ -52,6 +52,7 @@ this reason. Build the command from what is there:
 | `apt-get` | `sudo apt-get install ffmpeg` | `sudo apt-get install texlive texlive-latex-extra dvisvgm` |
 | `dnf` | `sudo dnf install ffmpeg` | `sudo dnf install texlive-scheme-medium texlive-dvisvgm` |
 | `pacman` | `sudo pacman -S ffmpeg` | `sudo pacman -S texlive-core texlive-binextra` |
+| `zypper` | `sudo zypper install ffmpeg` | `sudo zypper install texlive-scheme-medium texlive-dvisvgm` |
 
 > **Never run a `sudo` command.** Anything in `platform.needs_sudo` gets handed to the user to
 > run themselves, in their own shell, where they can see what it is asking for. Print it and
@@ -180,10 +181,14 @@ FFmpeg together:
 python -B -m manim -ql "${CLAUDE_PLUGIN_ROOT}/assets/test_voiceover.py" TestScene
 ```
 
-**`-B` is not optional.** Without it Python writes `__pycache__` into the installed plugin
-directory, which is shared, may be read-only, and can leave stale bytecode across a plugin
-update. Verified 2026-09-18: a smoke-test run without `-B` dirtied
-`<plugin>/assets/__pycache__`.
+**`-B` is not optional here.** Manim *imports* the scene file, so without `-B` Python writes
+`__pycache__` into the installed plugin directory — which is shared, may be read-only, and can
+leave stale bytecode across a plugin update. Verified both ways on 2026-09-18.
+
+Step 1 also passes `-B`, for consistency rather than necessity: a script run directly as
+`__main__` is not byte-compiled, so the probe does not dirty anything on its own. It only would
+if something *imported* it. Keeping the flag on both means nobody has to remember which is
+which.
 
 If it passes, the environment is good and any later failure is in the generated scene. If it
 fails, the error is environmental — report it verbatim and stop.
