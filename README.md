@@ -16,7 +16,7 @@ narration and subtitles.
 - [What it does](#what-it-does) · [Requirements](#requirements) · [Install](#install)
 - [Set up a project](#set-up-a-project) · [Make a video](#make-a-video) · [Narration](#narration)
 - [What you get](#what-you-get) · [Status](#status) · [Repository layout](#repository-layout)
-- [Uninstall](#uninstall) · [Contributing](#contributing) · [License](#license)
+- [Uninstall](#uninstall) · [Community](#community) · [Contributing](#contributing) · [License](#license)
 
 ---
 
@@ -253,6 +253,7 @@ Expect to steer it.
 | `inputs/` | Your material — gitignored |
 | `work/`, `generated/`, `media/` | Working files and output — gitignored |
 | `docs/pipeline.svg` | The diagram at the top of this file |
+| `CONTRIBUTING.md` | How to contribute, and the rules that bind |
 | `CLAUDE.md` | Notes for anyone (or any agent) working on the plugin itself |
 
 ---
@@ -274,15 +275,27 @@ Your projects, videos and `inputs/` are untouched — nothing lives inside the p
 
 ---
 
+## Community
+
+- **[Discussions](https://github.com/F3rNaNDEZ57/mathcast/discussions)** — questions, ideas, and
+  showing a video you made with it
+- **[Issues](https://github.com/F3rNaNDEZ57/mathcast/issues)** — bugs and concrete proposals
+
 ## Contributing
 
-Issues and PRs welcome. Two things worth knowing before you change anything:
+[CONTRIBUTING.md](CONTRIBUTING.md) has the detail. The short version — three rules that carry
+most of the weight, each because breaking one has already cost this project time:
 
-- **The render → repair → inspect loop must stay in one context.** It works because a single
-  context holds the lesson, the scene, the traceback and the frames at the same time. Splitting it
-  across sub-agents breaks the only part that's been proven.
-- **A fix isn't shipped until the version bumps.** Plugin updates are version-gated; see the
-  local-development note under [Install](#install).
+- **The render → repair → inspect loop stays in one context.** It works because a single context
+  holds the lesson, the scene, the traceback and the frames at once. Splitting it across
+  sub-agents breaks the only part that's been proven.
+- **A fix isn't shipped until the version bumps.** Plugin updates are version-gated.
+- **"Works" means someone ran it.** Unverified work is welcome; unverified work described as
+  working is not.
+
+**Good places to start** are the gaps in [Status](#status) above — `init` has never run on macOS
+or Linux, and link ingestion has never run at all. A bug report on any of them is as useful as
+a fix.
 
 `CLAUDE.md` carries the design constraints an agent should read first.
 

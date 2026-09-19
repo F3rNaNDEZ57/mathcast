@@ -1,0 +1,73 @@
+name: Bug report
+description: Something didn't work — a render failed, a stage misbehaved, setup went wrong
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The probe output below answers most of what anyone would ask you,
+        so please include it if you can.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you got instead.
+      placeholder: |
+        I ran `ingest the PDF in inputs/` on a 40-page PDF and it only read the first 20 pages.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Which stage
+      options:
+        - "/mathcast:init — setup"
+        - "ingest — material to outline"
+        - "plan — outline to scene split"
+        - "script — narration"
+        - "make-video — render, repair, inspect"
+        - "Something else / not sure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: probe
+    attributes:
+      label: Environment probe
+      description: |
+        Output of `python assets/probe_env.py` from a clone, or
+        `python -B "${CLAUDE_PLUGIN_ROOT}/assets/probe_env.py"` if installed.
+        It reports toolchain versions, your package managers, whether your network has the
+        IPv6 fault, and which speech services load. It prints no credentials.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: error
+    attributes:
+      label: The error, verbatim
+      description: Paste the whole traceback rather than the last line — Manim's errors often name the real cause several lines up.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: mathcast version
+      description: From `claude plugin list`, or the `version` field in `.claude-plugin/plugin.json`.
+      placeholder: "0.3.1"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        **Already known.** These are listed as unexercised in the
+        [README status](https://github.com/F3rNaNDEZ57/mathcast#status) — a report on any of them
+        is still useful, and more useful than you'd think:
+        PDFs over 10 pages · link ingestion · `init` on macOS or Linux · LaTeX compile errors in
+        the repair loop · a split scene join showing a visible seam.
